@@ -122,8 +122,12 @@ public class WaveView extends RenderView {
             }
         }
 
-        //绘制背景
-        canvas.drawColor(backGroundColor);
+        //清屏
+        Paint p = new Paint();
+        p.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        canvas.drawPaint(p);
+        p.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
+
 
         //重置所有path并移动到起点
         firstPath.rewind();
