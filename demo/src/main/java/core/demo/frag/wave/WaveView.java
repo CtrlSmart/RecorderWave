@@ -11,7 +11,10 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.Xfermode;
+import android.util.ArrayMap;
 import android.util.AttributeSet;
+
+import java.util.Map;
 
 import core.demo.R;
 import core.demo.widget.RenderView;
@@ -35,6 +38,12 @@ public class WaveView extends RenderView {
     /*绘图*/
 
     private final Paint paint = new Paint();
+
+    private final Paint clearScreenPaint = new Paint();
+
+    private int regionStartColor = getResources().getColor(R.color.region_start_color);
+    private int regionCenterColor = getResources().getColor(R.color.region_center_color);
+    private int regionEndColor = getResources().getColor(R.color.region_end_color);
 
     {
         paint.setDither(true);
@@ -97,7 +106,11 @@ public class WaveView extends RenderView {
     /**
      * 绘图交叉模式。放在成员变量避免每次重复创建。
      */
-    private final Xfermode xfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC_IN);
+    private final Xfermode clipXfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC_IN);
+
+    private final Xfermode clearXfermode = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
+
+    private final Xfermode srcXfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC);
 
     private final int backGroundColor = Color.rgb(24, 33, 41);
 
@@ -123,10 +136,10 @@ public class WaveView extends RenderView {
         }
 
         //清屏
-        Paint p = new Paint();
-        p.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        canvas.drawPaint(p);
-        p.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC));
+
+        clearScreenPaint.setXfermode(clearXfermode);
+        canvas.drawPaint(clearScreenPaint);
+        clearScreenPaint.setXfermode(srcXfermode);
 
 
         //重置所有path并移动到起点
@@ -202,7 +215,7 @@ public class WaveView extends RenderView {
         //绘制渐变
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.BLACK);
-        paint.setXfermode(xfermode);
+        paint.setXfermode(clipXfermode);
         float startX, crestY, endX;
         for (int i = 2; i < crestAndCrossCount; i += 2) {
             //每隔两个点可绘制一个矩形。这里先计算矩形的参数
@@ -225,15 +238,15 @@ public class WaveView extends RenderView {
         //绘制上弦线
         paint.setStrokeWidth(3);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(getResources().getColor(R.color.region_start_color));
+        paint.setColor(regionStartColor);
         canvas.drawPath(firstPath, paint);
 
         //绘制下弦线
-        paint.setColor(getResources().getColor(R.color.region_end_color));
+        paint.setColor(regionEndColor);
         canvas.drawPath(secondPath, paint);
 
         //绘制中间线
-        paint.setColor(getResources().getColor(R.color.region_center_color));
+        paint.setColor(regionCenterColor);
         canvas.drawPath(centerPath, paint);
     }
 
@@ -247,7 +260,15 @@ public class WaveView extends RenderView {
     private double calcValue(float mapX, float offset) {
         offset %= 2;
         double sinFunc = Math.sin(0.75 * Math.PI * mapX - offset * Math.PI);
-        double recessionFunc = Math.pow(4 / (4 + Math.pow(mapX, 4)), 2.5);
+        double recessionFunc;
+        if(recessionFuncs.containsKey(mapX) ){
+            recessionFunc = recessionFuncs.get(mapX);
+        }else {
+            recessionFunc = Math.pow(4 / (4 + Math.pow(mapX, 4)), 2.5);
+            recessionFuncs.put(mapX,recessionFunc);
+        }
         return sinFunc * recessionFunc;
     }
+
+    Map<Float,Double> recessionFuncs = new ArrayMap<>();
 }
