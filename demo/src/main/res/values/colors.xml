@@ -2,5 +2,10 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
+    <color name="region_start_color">#6482e6c9</color>
+    <color name="region_end_color">#f00a2140</color>
+    <color name="region_center_color">#64ffffff</color>
+
     <color name="colorAccent">#FF4081</color>
+
 </resources>

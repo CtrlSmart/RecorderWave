@@ -13,6 +13,7 @@ import android.graphics.Shader;
 import android.graphics.Xfermode;
 import android.util.AttributeSet;
 
+import core.demo.R;
 import core.demo.widget.RenderView;
 
 public class WaveView extends RenderView {
@@ -99,7 +100,6 @@ public class WaveView extends RenderView {
     private final Xfermode xfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC_IN);
 
     private final int backGroundColor = Color.rgb(24, 33, 41);
-    private final int centerPathColor = Color.argb(64, 255, 255, 255);
 
     @Override
     protected void onRender(Canvas canvas, long millisPassed) {
@@ -139,7 +139,7 @@ public class WaveView extends RenderView {
 
         //当前时间的偏移量，通过该偏移量使得每次绘图都向右偏移，让画面动起来
         //如果希望速度快一点，可以调小分母
-        float offset = millisPassed / 500F;
+        float offset = millisPassed / 550F;
 
         //提前申明各种临时参数
         float x;
@@ -195,14 +195,13 @@ public class WaveView extends RenderView {
 
         //填充上下两条正弦函数
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.WHITE);
         paint.setStrokeWidth(1);
         canvas.drawPath(firstPath, paint);
         canvas.drawPath(secondPath, paint);
 
         //绘制渐变
-        paint.setColor(Color.BLUE);
         paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.BLACK);
         paint.setXfermode(xfermode);
         float startX, crestY, endX;
         for (int i = 2; i < crestAndCrossCount; i += 2) {
@@ -212,7 +211,7 @@ public class WaveView extends RenderView {
             endX = crestAndCrossPints[i][0];
 
             //crestY有正有负，无需去计算渐变是从上到下还是从下到上
-            paint.setShader(new LinearGradient(0, centerHeight + crestY, 0, centerHeight - crestY, Color.BLUE, Color.GREEN, Shader.TileMode.CLAMP));
+            paint.setShader(new LinearGradient(0, centerHeight + crestY, 0, centerHeight - crestY, getResources().getColor(R.color.region_start_color), getResources().getColor(R.color.region_end_color), Shader.TileMode.CLAMP));
             rectF.set(startX, centerHeight + crestY, endX, centerHeight - crestY);
             canvas.drawRect(rectF, paint);
         }
@@ -226,15 +225,15 @@ public class WaveView extends RenderView {
         //绘制上弦线
         paint.setStrokeWidth(3);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.BLUE);
+        paint.setColor(getResources().getColor(R.color.region_start_color));
         canvas.drawPath(firstPath, paint);
 
         //绘制下弦线
-        paint.setColor(Color.GREEN);
+        paint.setColor(getResources().getColor(R.color.region_end_color));
         canvas.drawPath(secondPath, paint);
 
         //绘制中间线
-        paint.setColor(centerPathColor);
+        paint.setColor(getResources().getColor(R.color.region_center_color));
         canvas.drawPath(centerPath, paint);
     }
 
