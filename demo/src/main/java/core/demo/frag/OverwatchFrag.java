@@ -15,7 +15,7 @@ import core.demo.frag.overwatch.OverWatchView;
  * @author DrkCore
  * @since 2016-09-22
  */
-public class OverWatchFrag extends Fragment {
+public class OverwatchFrag extends Fragment {
 
     @Nullable
     @Override

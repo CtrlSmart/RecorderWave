@@ -11,7 +11,7 @@ public class FragFactory {
 
 	public static List<Class> getFrags(){
 		List<Class> frags = new ArrayList<>();
-		frags.add(OverWatchFrag.class);
+		frags.add(OverwatchFrag.class);
 		frags.add(SortFrag.class);
 		frags.add(WaveFrag.class);
 		return frags;
