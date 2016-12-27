@@ -13,6 +13,8 @@ import android.graphics.Shader;
 import android.graphics.Xfermode;
 import android.util.ArrayMap;
 import android.util.AttributeSet;
+import android.util.SparseArray;
+import android.util.SparseIntArray;
 
 import java.util.Map;
 
@@ -278,17 +280,18 @@ public class WaveView extends RenderView {
      * @return
      */
     private double calcValue(float mapX, float offset) {
+        int keyX = (int) (mapX*1000);
         offset %= 2;
         double sinFunc = Math.sin(0.75 * Math.PI * mapX - offset * Math.PI);
         double recessionFunc;
-        if(recessionFuncs.containsKey(mapX) ){
-            recessionFunc = recessionFuncs.get(mapX);
+        if(recessionFuncs.indexOfKey(keyX) >=0 ){
+            recessionFunc = recessionFuncs.get(keyX);
         }else {
             recessionFunc = Math.pow(4 / (4 + Math.pow(mapX, 4)), 2.5);
-            recessionFuncs.put(mapX,recessionFunc);
+            recessionFuncs.put(keyX,recessionFunc);
         }
         return sinFunc * recessionFunc;
     }
 
-    Map<Float,Double> recessionFuncs = new ArrayMap<>();
+    SparseArray<Double> recessionFuncs = new SparseArray<>();
 }
