@@ -17,11 +17,14 @@ import android.util.AttributeSet;
 import java.util.Map;
 
 import core.demo.R;
+import core.demo.widget.PointFlake;
 import core.demo.widget.RenderView;
 
 public class WaveView extends RenderView {
 
     private static final String TAG = "WaveView";
+
+    private static final int NUM_POINTFLAKES = 7;
 
     public WaveView(Context context) {
         this(context, null);
@@ -41,9 +44,9 @@ public class WaveView extends RenderView {
 
     private final Paint clearScreenPaint = new Paint();
 
-    private int regionStartColor = getResources().getColor(R.color.region_start_color);
-    private int regionCenterColor = getResources().getColor(R.color.region_center_color);
-    private int regionEndColor = getResources().getColor(R.color.region_end_color);
+    private int regionStartColor = getResources().getColor(R.color.regionStartColor);
+    private int regionCenterColor = getResources().getColor(R.color.regionCenterColor);
+    private int regionEndColor = getResources().getColor(R.color.regionEndColor);
 
     {
         paint.setDither(true);
@@ -114,6 +117,8 @@ public class WaveView extends RenderView {
 
     private final int backGroundColor = Color.rgb(24, 33, 41);
 
+    private PointFlake[] pointFlakes = new PointFlake[NUM_POINTFLAKES];
+
     @Override
     protected void onRender(Canvas canvas, long millisPassed) {
         if (samplingX == null) {//首次初始化
@@ -133,6 +138,18 @@ public class WaveView extends RenderView {
                 samplingX[i] = x;
                 mapX[i] = (x / (float) width) * 4 - 2;//将x映射到[-2,2]的区间上
             }
+            //雪点
+            Paint pointPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            pointPaint.setColor(getResources().getColor(R.color.pointColor));
+            pointPaint.setStyle(Paint.Style.FILL);
+            pointFlakes[0] = PointFlake.create(width/12,centerHeight -amplitude/3,width/8,centerHeight+amplitude/3,pointPaint);
+            pointFlakes[1] = PointFlake.create(width/4,centerHeight -amplitude/5,width/4+20,centerHeight+amplitude/5,pointPaint);
+            pointFlakes[2] = PointFlake.create(width/3,centerHeight -amplitude/3/8,width/3+5,centerHeight+amplitude/2,pointPaint);
+            pointFlakes[3] = PointFlake.create(width/2,centerHeight -amplitude/5,width/9*5,centerHeight+amplitude/3*2,pointPaint);
+            pointFlakes[4] = PointFlake.create(width/3*2,centerHeight,width/4*3,centerHeight+amplitude/3*2,pointPaint);
+            pointFlakes[5] = PointFlake.create(width/6*5,centerHeight-amplitude/4, width/8*7,centerHeight,pointPaint);
+            pointFlakes[6] = PointFlake.create(width/9*8,centerHeight -amplitude/2,width/11*10,centerHeight+amplitude/3*2,pointPaint);
+
         }
 
         //清屏
@@ -224,7 +241,7 @@ public class WaveView extends RenderView {
             endX = crestAndCrossPints[i][0];
 
             //crestY有正有负，无需去计算渐变是从上到下还是从下到上
-            paint.setShader(new LinearGradient(0, centerHeight + crestY, 0, centerHeight - crestY, getResources().getColor(R.color.region_start_color), getResources().getColor(R.color.region_end_color), Shader.TileMode.CLAMP));
+            paint.setShader(new LinearGradient(0, centerHeight + crestY, 0, centerHeight - crestY, getResources().getColor(R.color.regionStartColor), getResources().getColor(R.color.regionEndColor), Shader.TileMode.CLAMP));
             rectF.set(startX, centerHeight + crestY, endX, centerHeight - crestY);
             canvas.drawRect(rectF, paint);
         }
@@ -248,6 +265,9 @@ public class WaveView extends RenderView {
         //绘制中间线
         paint.setColor(regionCenterColor);
         canvas.drawPath(centerPath, paint);
+        for (PointFlake snowFlake : pointFlakes) {
+            snowFlake.draw(canvas);
+        }
     }
 
     /**
