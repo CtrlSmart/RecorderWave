@@ -11,12 +11,8 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.Xfermode;
-import android.util.ArrayMap;
 import android.util.AttributeSet;
 import android.util.SparseArray;
-import android.util.SparseIntArray;
-
-import java.util.Map;
 
 import core.demo.R;
 import core.demo.widget.PointFlake;
@@ -223,7 +219,7 @@ public class WaveView extends RenderView {
         centerPath.lineTo(width, centerHeight);
 
         //记录layer
-        int saveCount = canvas.saveLayer(0, 0, width, height, null, Canvas.ALL_SAVE_FLAG);
+        int saveCount = canvas.saveLayer(0, 0, width, height, null, Canvas.ALL_SAVE_FLAG);  //相关知识点： http://blog.csdn.net/cquwentao/article/details/51423371
 
         //填充上下两条正弦函数
         paint.setStyle(Paint.Style.FILL);
